@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport"
+content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no"/>
+
+<style>
+
+*{
+box-sizing:border-box;
+-webkit-tap-highlight-color:transparent;
+}
+
+html,body{
+margin:0;
+padding:0;
+width:100%;
+overflow:hidden;
+background:transparent;
+font-family:Arial,sans-serif;
+}
+
+.card{
+width:calc(100vw - 28px);
+margin:4px auto 2px;
+background:#ffffff;
+border:1px solid #ead9de;
+border-radius:14px;
+box-shadow:0 2px 8px rgba(100,20,35,0.06);
+padding:24px 4px 8px;
+position:relative;
+overflow:hidden;
+}
+
+.ribbon{
+position:absolute;
+top:0;
+left:50%;
+transform:translate(-50%,-18%);
+background:#a51c43;
+color:#fff;
+font-size:11px;
+font-weight:700;
+padding:6px 14px 7px;
+border-radius:0 0 10px 10px;
+white-space:nowrap;
+box-shadow:0 2px 6px rgba(100,20,35,0.12);
+}
+
+.viewport{
+width:100%;
+overflow-x:auto;
+overflow-y:hidden;
+-webkit-overflow-scrolling:touch;
+scrollbar-width:none;
+}
+
+.viewport::-webkit-scrollbar{
+display:none;
+}
+
+.track{
+display:flex;
+gap:6px;
+padding:2px 2px;
+}
+
+.item{
+flex:0 0 auto;
+width:60px;
+text-align:center;
+}
+
+.ring{
+width:54px;
+height:54px;
+margin:0 auto 5px;
+border-radius:50%;
+border:3px solid #c9a04d;
+background:linear-gradient(180deg,#fffdf8 0%,#fcf6ea 100%);
+display:flex;
+align-items:center;
+justify-content:center;
+box-shadow:inset 0 0 0 2px #fff;
+}
+
+.icon{
+width:38px;
+height:38px;
+border-radius:50%;
+background:#f9f2f4;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:18px;
+color:#a51c43;
+}
+
+.label{
+font-size:9px;
+line-height:1.1;
+color:#2e2e2e;
+font-weight:600;
+min-height:18px;
+word-break:break-word;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+<div class="ribbon">what's new</div>
+
+<div class="viewport" id="viewport">
+<div class="track" id="track"></div>
+</div>
+
+</div>
+
+<script>
+
+const items=[
+{label:"Cards",emoji:"💳",url:"idfc://cards"},
+{label:"Loans",emoji:"₹",url:"idfc://loans"},
+{label:"Deposits",emoji:"🏦",url:"idfc://deposits"},
+{label:"UPI",emoji:"📱",url:"idfc://upi"},
+{label:"Bills",emoji:"🧾",url:"idfc://bills"},
+{label:"Rewards",emoji:"🎁",url:"idfc://rewards"},
+{label:"Insurance",emoji:"🛡️",url:"idfc://insurance"},
+{label:"Spend",emoji:"📊",url:"idfc://spend"}
+];
+
+const track=document.getElementById("track");
+
+items.forEach(item=>{
+
+const el=document.createElement("div");
+el.className="item";
+
+el.innerHTML=`
+<div class="ring">
+<div class="icon">${item.emoji}</div>
+</div>
+<div class="label">${item.label}</div>
+`;
+
+if(item.url){
+
+el.onclick=()=>{
+
+if(window.ReactNativeWebView){
+
+window.ReactNativeWebView.postMessage(JSON.stringify({
+type:"item_click",
+label:item.label,
+url:item.url
+}));
+
+}
+
+};
+
+}
+
+track.appendChild(el);
+
+});
+
+
+function sendHeight(){
+
+if(window.ReactNativeWebView){
+
+window.ReactNativeWebView.postMessage(JSON.stringify({
+type:"height",
+value:document.documentElement.scrollHeight
+}));
+
+}
+
+}
+
+window.addEventListener("load",()=>{
+
+setTimeout(sendHeight,100);
+setTimeout(sendHeight,250);
+
+});
+
+</script>
+
+</body>
+</html>
