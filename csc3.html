@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSC3 Flash Sale</title>
+
+<style>
+body{
+margin:0;
+font-family:Arial;
+background:transparent;
+}
+
+.strip{
+display:flex;
+align-items:center;
+justify-content:space-between;
+
+padding:14px 16px;
+border-radius:16px;
+
+background:linear-gradient(135deg,#ef4444,#f97316);
+color:white;
+
+box-shadow:0 8px 20px rgba(0,0,0,0.2);
+}
+
+.left{
+display:flex;
+align-items:center;
+gap:12px;
+}
+
+.icon{
+font-size:24px;
+}
+
+.title{
+font-weight:700;
+font-size:15px;
+}
+
+.subtitle{
+font-size:12px;
+}
+
+.timer{
+font-size:12px;
+font-weight:bold;
+margin-top:3px;
+}
+
+.cta{
+background:white;
+color:#ef4444;
+border:none;
+padding:8px 12px;
+border-radius:20px;
+font-weight:700;
+cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div class="strip">
+<div class="left">
+<div class="icon">⚡</div>
+
+<div>
+<div class="title">₹100 Cashback Offer</div>
+<div class="subtitle">Activate before timer ends</div>
+<div class="timer" id="timer">Ends in 05:00</div>
+</div>
+</div>
+
+<button class="cta">Activate</button>
+</div>
+
+<script>
+
+let seconds=300
+
+function updateTimer(){
+
+let min=Math.floor(seconds/60)
+let sec=seconds%60
+
+if(sec<10) sec="0"+sec
+
+document.getElementById("timer").innerText=
+"Ends in "+min+":"+sec
+
+seconds--
+}
+
+setInterval(updateTimer,1000)
+
+</script>
+
+</body>
+</html>
