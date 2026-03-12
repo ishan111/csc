@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+  />
+  <title>IDFC FIRST Strip</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      background: transparent;
+      font-family: Arial, sans-serif;
+      overflow: hidden;
+    }
+
+    body {
+      background: #f6f7fb;
+    }
+
+    .strip-wrapper {
+      width: 100%;
+      padding: 16px 12px 10px;
+      background: transparent;
+    }
+
+    .strip-card {
+      position: relative;
+      width: 100%;
+      background: #ffffff;
+      border-radius: 24px;
+      box-shadow: 0 8px 22px rgba(92, 12, 28, 0.10);
+      padding: 42px 10px 18px;
+      overflow: hidden;
+      border: 1px solid #f1d9de;
+    }
+
+    .top-ribbon {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translate(-50%, -38%);
+      background: #9e1b32; /* IDFC-like maroon */
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 15px;
+      line-height: 1;
+      padding: 12px 24px 13px;
+      border-radius: 0 0 10px 10px;
+      white-space: nowrap;
+      box-shadow: 0 4px 10px rgba(92, 12, 28, 0.18);
+    }
+
+    .top-ribbon::before,
+    .top-ribbon::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      width: 14px;
+      height: 10px;
+      background: #6f1022;
+      z-index: -1;
+    }
+
+    .top-ribbon::before {
+      left: -9px;
+      clip-path: polygon(100% 0, 0 100%, 100% 100%);
+    }
+
+    .top-ribbon::after {
+      right: -9px;
+      clip-path: polygon(0 0, 0 100%, 100% 100%);
+    }
+
+    .carousel-viewport {
+      overflow: hidden;
+      width: 100%;
+    }
+
+    .carousel-track {
+      display: flex;
+      transition: transform 0.3s ease;
+      will-change: transform;
+    }
+
+    .slide {
+      min-width: 100%;
+      display: flex;
+      justify-content: space-around;
+      align-items: flex-start;
+      gap: 8px;
+      padding-top: 2px;
+    }
+
+    .item {
+      width: 23%;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .ring {
+      width: 84px;
+      height: 84px;
+      margin: 0 auto 10px;
+      border-radius: 50%;
+      border: 4px solid #caa35c; /* gold accent */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fffaf1;
+      position: relative;
+      box-shadow: inset 0 0 0 4px #fff;
+    }
+
+    .icon-inner {
+      width: 62px;
+      height: 62px;
+      border-radius: 50%;
+      background: var(--inner-bg, #f9f0f2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      color: #9e1b32;
+      font-weight: 700;
+      overflow: hidden;
+    }
+
+    .icon-inner img {
+      width: 72%;
+      height: 72%;
+      object-fit: contain;
+      display: block;
+    }
+
+    .label {
+      font-size: 13px;
+      color: #2d2d2d;
+      line-height: 1.2;
+      font-weight: 600;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      min-height: 32px;
+      padding: 0 2px;
+    }
+
+    .subtle {
+      color: #7a7a7a;
+    }
+
+    .dots {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .dot {
+      width: 24px;
+      height: 6px;
+      border-radius: 999px;
+      background: #d9c6cb;
+      transition: all 0.25s ease;
+    }
+
+    .dot.active {
+      background: #9e1b32;
+      width: 30px;
+    }
+
+    @media (max-width: 420px) {
+      .ring {
+        width: 76px;
+        height: 76px;
+      }
+
+      .icon-inner {
+        width: 56px;
+        height: 56px;
+        font-size: 24px;
+      }
+
+      .label {
+        font-size: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="strip-wrapper">
+    <div class="strip-card">
+      <div class="top-ribbon">what’s new</div>
+
+      <div class="carousel-viewport" id="viewport">
+        <div class="carousel-track" id="track"></div>
+      </div>
+
+      <div class="dots" id="dots"></div>
+    </div>
+  </div>
+
+  <script>
+    const defaultData = [
+      { label: "Credit Card", emoji: "💳", bg: "#f9eef1", url: "idfc://credit-card" },
+      { label: "Personal Loan", emoji: "₹", bg: "#fdf4e8", url: "idfc://personal-loan" },
+      { label: "Fixed Deposit", emoji: "🏦", bg: "#f3f0fb", url: "idfc://fixed-deposit" },
+      { label: "UPI Payments", emoji: "📲", bg: "#eef7f2", url: "idfc://upi" },
+      { label: "Bill Payments", emoji: "🧾", bg: "#eef4fb", url: "idfc://bill-pay" },
+      { label: "Reward Points", emoji: "🎁", bg: "#fdf3ef", url: "idfc://rewards" },
+      { label: "Insurance", emoji: "🛡️", bg: "#f3f7ea", url: "idfc://insurance" },
+      { label: "Track Expenses", emoji: "📊", bg: "#f8eff9", url: "idfc://expenses" }
+    ];
+
+    const items = Array.isArray(window.stripData) && window.stripData.length
+      ? window.stripData
+      : defaultData;
+
+    const itemsPerSlide = 4;
+    const pages = [];
+
+    for (let i = 0; i < items.length; i += itemsPerSlide) {
+      pages.push(items.slice(i, i + itemsPerSlide));
+    }
+
+    const track = document.getElementById("track");
+    const dots = document.getElementById("dots");
+
+    pages.forEach((pageItems, pageIndex) => {
+      const slide = document.createElement("div");
+      slide.className = "slide";
+
+      pageItems.forEach(item => {
+        const card = document.createElement("div");
+        card.className = "item";
+
+        const ring = document.createElement("div");
+        ring.className = "ring";
+
+        const inner = document.createElement("div");
+        inner.className = "icon-inner";
+        inner.style.setProperty("--inner-bg", item.bg || "#f9eef1");
+
+        if (item.image) {
+          const img = document.createElement("img");
+          img.src = item.image;
+          img.alt = item.label || "";
+          inner.appendChild(img);
+        } else {
+          inner.textContent = item.emoji || "•";
+        }
+
+        const label = document.createElement("div");
+        label.className = "label";
+        label.textContent = item.label || "";
+
+        ring.appendChild(inner);
+        card.appendChild(ring);
+        card.appendChild(label);
+
+        if (item.url) {
+          card.addEventListener("click", () => {
+            if (window.ReactNativeWebView) {
+              window.ReactNativeWebView.postMessage(JSON.stringify({
+                type: "item_click",
+                label: item.label,
+                url: item.url
+              }));
+            }
+          });
+        }
+
+        slide.appendChild(card);
+      });
+
+      track.appendChild(slide);
+
+      const dot = document.createElement("div");
+      dot.className = "dot" + (pageIndex === 0 ? " active" : "");
+      dots.appendChild(dot);
+    });
+
+    let current = 0;
+    let startX = 0;
+    let currentX = 0;
+    let isDragging = false;
+
+    function updateCarousel(animated = true) {
+      track.style.transition = animated ? "transform 0.3s ease" : "none";
+      track.style.transform = `translateX(-${current * 100}%)`;
+
+      [...dots.children].forEach((dot, idx) => {
+        dot.classList.toggle("active", idx === current);
+      });
+
+      if (window.ReactNativeWebView) {
+        window.ReactNativeWebView.postMessage(JSON.stringify({
+          type: "height",
+          value: document.documentElement.scrollHeight
+        }));
+      }
+    }
+
+    const viewport = document.getElementById("viewport");
+
+    viewport.addEventListener("touchstart", (e) => {
+      isDragging = true;
+      startX = e.touches[0].clientX;
+      currentX = startX;
+    }, { passive: true });
+
+    viewport.addEventListener("touchmove", (e) => {
+      if (!isDragging) return;
+      currentX = e.touches[0].clientX;
+    }, { passive: true });
+
+    viewport.addEventListener("touchend", () => {
+      if (!isDragging) return;
+
+      const diff = currentX - startX;
+
+      if (Math.abs(diff) > 40) {
+        if (diff < 0 && current < pages.length - 1) current++;
+        else if (diff > 0 && current > 0) current--;
+      }
+
+      isDragging = false;
+      updateCarousel(true);
+    });
+
+    updateCarousel(false);
+
+    window.addEventListener("load", () => {
+      setTimeout(() => {
+        if (window.ReactNativeWebView) {
+          window.ReactNativeWebView.postMessage(JSON.stringify({
+            type: "height",
+            value: document.documentElement.scrollHeight
+          }));
+        }
+      }, 100);
+    });
+  </script>
+</body>
+</html>
