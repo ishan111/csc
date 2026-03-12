@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSC2 Quiz Strip</title>
+
+<style>
+body{
+margin:0;
+font-family:Arial;
+background:transparent;
+}
+
+.strip{
+display:flex;
+align-items:center;
+justify-content:space-between;
+
+padding:14px 16px;
+border-radius:16px;
+
+background:linear-gradient(135deg,#7c3aed,#9333ea);
+color:white;
+
+box-shadow:0 8px 20px rgba(0,0,0,0.2);
+}
+
+.left{
+display:flex;
+align-items:center;
+gap:12px;
+}
+
+.icon{
+font-size:24px;
+}
+
+.title{
+font-weight:700;
+font-size:15px;
+}
+
+.subtitle{
+font-size:12px;
+opacity:.9;
+}
+
+.cta{
+background:#fde68a;
+color:#4c1d95;
+border:none;
+padding:8px 12px;
+border-radius:20px;
+font-weight:700;
+cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div class="strip">
+<div class="left">
+<div class="icon">🧠</div>
+
+<div>
+<div class="title">Take Today’s 2-Question Quiz</div>
+<div class="subtitle">Answer & win surprise rewards</div>
+</div>
+</div>
+
+<button class="cta">Play</button>
+</div>
+
+</body>
+</html>
