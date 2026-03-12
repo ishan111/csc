@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+  />
+  <title>CSC Auto Carousel</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: transparent;
+      font-family: Arial, sans-serif;
+    }
+
+    .wrapper {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .carousel {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+
+    .carousel::-webkit-scrollbar {
+      display: none;
+    }
+
+    .slide {
+      flex: 0 0 100%;
+      width: 100%;
+      height: 100%;
+      scroll-snap-align: start;
+      display: flex;
+    }
+
+    .strip {
+      width: 100%;
+      height: 100%;
+      border-radius: 18px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      color: white;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+      min-width: 0;
+      z-index: 1;
+    }
+
+    .iconWrap {
+      width: 46px;
+      height: 46px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 22px;
+    }
+
+    .textBlock {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .pill,
+    .badge,
+    .tag {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      padding: 4px 8px;
+      border-radius: 999px;
+      margin-bottom: 6px;
+    }
+
+    .title {
+      font-size: 15px;
+      font-weight: 700;
+      line-height: 1.2;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .subtitle {
+      margin-top: 4px;
+      font-size: 12px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      opacity: 0.92;
+    }
+
+    .timer {
+      margin-top: 4px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .cta {
+      flex-shrink: 0;
+      border: none;
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      z-index: 1;
+    }
+
+    .cta:active {
+      transform: scale(0.97);
+    }
+
+    .reward {
+      background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+    }
+
+    .reward .iconWrap {
+      background: rgba(255, 255, 255, 0.16);
+    }
+
+    .reward .badge {
+      color: #dbeafe;
+      background: rgba(255, 255, 255, 0.14);
+    }
+
+    .reward .cta {
+      background: white;
+      color: #1e3a8a;
+    }
+
+    .quiz {
+      background: linear-gradient(135deg, #5b21b6, #9333ea);
+      box-shadow: 0 8px 24px rgba(91, 33, 182, 0.26);
+    }
+
+    .quiz .iconWrap {
+      background: rgba(255, 255, 255, 0.14);
+    }
+
+    .quiz .pill {
+      color: #fef3c7;
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    .quiz .cta {
+      background: #fde68a;
+      color: #4c1d95;
+    }
+
+    .flash {
+      background: linear-gradient(270deg, #ef4444, #f97316, #ef4444);
+      background-size: 400% 400%;
+      animation: gradientMove 8s ease infinite;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+    }
+
+    .flash .iconWrap {
+      background: rgba(255, 255, 255, 0.18);
+    }
+
+    .flash .tag {
+      background: rgba(0, 0, 0, 0.22);
+      color: white;
+    }
+
+    .flash .cta {
+      background: white;
+      color: #ef4444;
+    }
+
+    @keyframes gradientMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .premium {
+      background: linear-gradient(135deg, #111827, #374151);
+      box-shadow: 0 10px 24px rgba(17, 24, 39, 0.22);
+    }
+
+    .premium .iconWrap {
+      background: linear-gradient(135deg, rgba(251,191,36,0.28), rgba(245,158,11,0.18));
+      border: 1px solid rgba(251,191,36,0.18);
+    }
+
+    .premium .badge {
+      color: #fcd34d;
+      background: rgba(251,191,36,0.12);
+      border: 1px solid rgba(251,191,36,0.18);
+    }
+
+    .premium .subtitle {
+      color: rgba(255,255,255,0.78);
+    }
+
+    .premium .cta {
+      background: #fcd34d;
+      color: #111827;
+    }
+
+    .spin {
+      background: linear-gradient(135deg, #0ea5e9, #2563eb);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+    }
+
+    .spin .iconWrap {
+      background: rgba(255, 255, 255, 0.18);
+      border-radius: 50%;
+      animation: spinWheel 3s linear infinite;
+    }
+
+    .spin .tag {
+      background: rgba(0, 0, 0, 0.2);
+      color: white;
+    }
+
+    .spin .cta {
+      background: white;
+      color: #2563eb;
+    }
+
+    @keyframes spinWheel {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .dots {
+      position: absolute;
+      left: 50%;
+      bottom: 8px;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 6px;
+      z-index: 5;
+      pointer-events: none;
+    }
+
+    .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.35);
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+
+    .dot.active {
+      background: rgba(255,255,255,0.95);
+      transform: scale(1.25);
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="carousel" id="carousel">
+      <div class="slide">
+        <div class="strip reward" onclick="handleStripClick('reward_strip')">
+          <div class="left">
+            <div class="iconWrap">🎁</div>
+            <div class="textBlock">
+              <div class="badge">Limited Time</div>
+              <div class="title">Unlock ₹500 Reward Points</div>
+              <div class="subtitle">Complete 1 quick step and claim your bonus</div>
+            </div>
+          </div>
+          <button class="cta" onclick="handleCTA(event, 'claim_reward')">Claim</button>
+        </div>
+      </div>
+
+      <div class="slide">
+        <div class="strip quiz" onclick="handleStripClick('quiz_strip')">
+          <div class="left">
+            <div class="iconWrap">🧠</div>
+            <div class="textBlock">
+              <div class="pill">2-Question Challenge</div>
+              <div class="title">Can you unlock today’s surprise reward?</div>
+              <div class="subtitle">Answer 2 quick questions and win instant benefits</div>
+            </div>
+          </div>
+          <button class="cta" onclick="handleCTA(event, 'play_quiz')">Play</button>
+        </div>
+      </div>
+
+      <div class="slide">
+        <div class="strip flash" onclick="handleStripClick('flash_offer_strip')">
+          <div class="left">
+            <div class="iconWrap">⚡</div>
+            <div class="textBlock">
+              <div class="tag">Flash Offer</div>
+              <div class="title">₹100 Cashback on your next payment</div>
+              <div class="subtitle">Activate before time runs out</div>
+              <div class="timer" id="timer">Ends in 05:00</div>
+            </div>
+          </div>
+          <button class="cta" onclick="handleCTA(event, 'activate_offer')">Activate</button>
+        </div>
+      </div>
+
+      <div class="slide">
+        <div class="strip premium" onclick="handleStripClick('premium_upgrade_strip')">
+          <div class="left">
+            <div class="iconWrap">💳</div>
+            <div class="textBlock">
+              <div class="badge">Pre-approved</div>
+              <div class="title">Upgrade to Premium and unlock higher benefits</div>
+              <div class="subtitle">Enjoy lounge access, rewards and priority service</div>
+            </div>
+          </div>
+          <button class="cta" onclick="handleCTA(event, 'view_premium_offer')">View</button>
+        </div>
+      </div>
+
+      <div class="slide">
+        <div class="strip spin" onclick="handleStripClick('spin_strip')">
+          <div class="left">
+            <div class="iconWrap">🎡</div>
+            <div class="textBlock">
+              <div class="tag">Today's Lucky Spin</div>
+              <div class="title">Spin the wheel & unlock surprise rewards</div>
+              <div class="subtitle">Cashback, vouchers & exclusive perks</div>
+            </div>
+          </div>
+          <button class="cta" onclick="handleCTA(event, 'spin_now')">Spin</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="dots" id="dots">
+      <div class="dot active"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+    </div>
+  </div>
+
+  <script>
+    const carousel = document.getElementById('carousel');
+    const dots = Array.from(document.querySelectorAll('.dot'));
+    const slideCount = 5;
+
+    let currentIndex = 0;
+    let autoScrollInterval = null;
+    let resumeTimeout = null;
+
+    function goToSlide(index) {
+      currentIndex = (index + slideCount) % slideCount;
+      carousel.scrollTo({
+        left: currentIndex * carousel.clientWidth,
+        behavior: 'smooth'
+      });
+      updateDots();
+    }
+
+    function updateDots() {
+      dots.forEach((dot, i) => {
+        dot.classList.toggle('active', i === currentIndex);
+      });
+    }
+
+    function syncIndexFromScroll() {
+      currentIndex = Math.round(carousel.scrollLeft / carousel.clientWidth);
+      updateDots();
+    }
+
+    function startAutoScroll() {
+      stopAutoScroll();
+      autoScrollInterval = setInterval(() => {
+        goToSlide(currentIndex + 1);
+      }, 3000);
+    }
+
+    function stopAutoScroll() {
+      if (autoScrollInterval) {
+        clearInterval(autoScrollInterval);
+        autoScrollInterval = null;
+      }
+    }
+
+    function pauseAndResumeAutoScroll() {
+      stopAutoScroll();
+      if (resumeTimeout) clearTimeout(resumeTimeout);
+      resumeTimeout = setTimeout(() => {
+        startAutoScroll();
+      }, 4500);
+    }
+
+    let scrollDebounce;
+    carousel.addEventListener('scroll', () => {
+      syncIndexFromScroll();
+      clearTimeout(scrollDebounce);
+      scrollDebounce = setTimeout(() => {
+        syncIndexFromScroll();
+      }, 120);
+    });
+
+    carousel.addEventListener('touchstart', pauseAndResumeAutoScroll, { passive: true });
+    carousel.addEventListener('mousedown', pauseAndResumeAutoScroll);
+
+    function handleStripClick(target) {
+      console.log('Strip clicked:', target);
+      // window.ReactNativeWebView?.postMessage(JSON.stringify({
+      //   type: 'strip_click',
+      //   target
+      // }));
+    }
+
+    function handleCTA(event, target) {
+      event.stopPropagation();
+      console.log('CTA clicked:', target);
+      // window.ReactNativeWebView?.postMessage(JSON.stringify({
+      //   type: 'cta_click',
+      //   target
+      // }));
+    }
+
+    let seconds = 300;
+    function updateTimer() {
+      const min = Math.floor(seconds / 60);
+      let sec = seconds % 60;
+      sec = sec < 10 ? '0' + sec : sec;
+      const timer = document.getElementById('timer');
+      if (timer) {
+        timer.innerText = 'Ends in ' + min + ':' + sec;
+      }
+      if (seconds > 0) seconds--;
+    }
+
+    updateTimer();
+    setInterval(updateTimer, 1000);
+    updateDots();
+    startAutoScroll();
+  </script>
+</body>
+</html>
