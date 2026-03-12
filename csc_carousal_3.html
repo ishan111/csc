@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>IDFC Strip</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      background: transparent;
+      font-family: Arial, sans-serif;
+      overflow: hidden;
+    }
+
+    body {
+      width: 100%;
+    }
+
+    .strip-wrapper {
+      width: 100%;
+      padding: 8px 8px 6px;
+      background: transparent;
+    }
+
+    .strip-card {
+      position: relative;
+      width: 100%;
+      background: #ffffff;
+      border-radius: 18px;
+      border: 1px solid #ead9de;
+      box-shadow: 0 4px 12px rgba(100, 20, 35, 0.08);
+      padding: 34px 6px 12px;
+      overflow: hidden;
+    }
+
+    .top-ribbon {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translate(-50%, -32%);
+      background: #a51c43;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 10px 18px 11px;
+      border-radius: 0 0 10px 10px;
+      white-space: nowrap;
+      box-shadow: 0 4px 10px rgba(100, 20, 35, 0.14);
+      z-index: 2;
+    }
+
+    .carousel-viewport {
+      width: 100%;
+      overflow: hidden;
+    }
+
+    .carousel-track {
+      display: flex;
+      width: 100%;
+      transition: transform 0.28s ease;
+    }
+
+    .slide {
+      min-width: 100%;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 4px;
+      padding: 0 2px;
+    }
+
+    .item {
+      flex: 1;
+      min-width: 0;
+      text-align: center;
+    }
+
+    .ring {
+      width: 68px;
+      height: 68px;
+      margin: 0 auto 8px;
+      border-radius: 50%;
+      border: 4px solid #c9a04d;
+      background: linear-gradient(180deg, #fffdf8 0%, #fcf6ea 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: inset 0 0 0 3px #fff;
+    }
+
+    .icon-inner {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: #f9f2f4;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: #a51c43;
+    }
+
+    .label {
+      font-size: 11px;
+      line-height: 1.15;
+      color: #2e2e2e;
+      font-weight: 600;
+      min-height: 26px;
+      padding: 0 1px;
+      word-break: break-word;
+    }
+
+    .dots {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .dot {
+      width: 18px;
+      height: 5px;
+      border-radius: 999px;
+      background: #dbc9cf;
+    }
+
+    .dot.active {
+      width: 24px;
+      background: #a51c43;
+    }
+
+    @media (max-width: 380px) {
+      .strip-wrapper {
+        padding: 6px 6px 4px;
+      }
+
+      .strip-card {
+        padding: 32px 4px 10px;
+        border-radius: 16px;
+      }
+
+      .ring {
+        width: 60px;
+        height: 60px;
+      }
+
+      .icon-inner {
+        width: 42px;
+        height: 42px;
+        font-size: 20px;
+      }
+
+      .label {
+        font-size: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="strip-wrapper">
+    <div class="strip-card">
+      <div class="top-ribbon">what's new</div>
+
+      <div class="carousel-viewport" id="viewport">
+        <div class="carousel-track" id="track"></div>
+      </div>
+
+      <div class="dots" id="dots"></div>
+    </div>
+  </div>
+
+  <script>
+    const defaultData = [
+      { label: "Cards", emoji: "💳", url: "idfc://cards" },
+      { label: "Loans", emoji: "₹", url: "idfc://loans" },
+      { label: "Deposits", emoji: "🏦", url: "idfc://deposits" },
+      { label: "UPI", emoji: "📱", url: "idfc://upi" },
+      { label: "Bills", emoji: "🧾", url: "idfc://bills" },
+      { label: "Rewards", emoji: "🎁", url: "idfc://rewards" },
+      { label: "Insurance", emoji: "🛡️", url: "idfc://insurance" },
+      { label: "Spend", emoji: "📊", url: "idfc://spend" }
+    ];
+
+    const items = Array.isArray(window.stripData) && window.stripData.length
+      ? window.stripData
+      : defaultData;
+
+    const itemsPerSlide = 4;
+    const pages = [];
+    for (let i = 0; i < items.length; i += itemsPerSlide) {
+      pages.push(items.slice(i, i + itemsPerSlide));
+    }
+
+    const track = document.getElementById("track");
+    const dots = document.getElementById("dots");
+
+    pages.forEach((pageItems, pageIndex) => {
+      const slide = document.createElement("div");
+      slide.className = "slide";
+
+      pageItems.forEach(item => {
+        const el = document.createElement("div");
+        el.className = "item";
+
+        el.innerHTML = `
+          <div class="ring">
+            <div class="icon-inner">${item.emoji || "•"}</div>
+          </div>
+          <div class="label">${item.label || ""}</div>
+        `;
+
+        if (item.url) {
+          el.addEventListener("click", () => {
+            if (window.ReactNativeWebView) {
+              window.ReactNativeWebView.postMessage(JSON.stringify({
+                type: "item_click",
+                label: item.label,
+                url: item.url
+              }));
+            }
+          });
+        }
+
+        slide.appendChild(el);
+      });
+
+      track.appendChild(slide);
+
+      const dot = document.createElement("div");
+      dot.className = "dot" + (pageIndex === 0 ? " active" : "");
+      dots.appendChild(dot);
+    });
+
+    let current = 0;
+    let startX = 0;
+    let currentX = 0;
+    let isDragging = false;
+
+    function updateCarousel(animated = true) {
+      track.style.transition = animated ? "transform 0.28s ease" : "none";
+      track.style.transform = `translateX(-${current * 100}%)`;
+
+      [...dots.children].forEach((dot, idx) => {
+        dot.classList.toggle("active", idx === current);
+      });
+
+      sendHeight();
+    }
+
+    function sendHeight() {
+      if (window.ReactNativeWebView) {
+        window.ReactNativeWebView.postMessage(JSON.stringify({
+          type: "height",
+          value: document.documentElement.scrollHeight
+        }));
+      }
+    }
+
+    const viewport = document.getElementById("viewport");
+
+    viewport.addEventListener("touchstart", (e) => {
+      isDragging = true;
+      startX = e.touches[0].clientX;
+      currentX = startX;
+    }, { passive: true });
+
+    viewport.addEventListener("touchmove", (e) => {
+      if (!isDragging) return;
+      currentX = e.touches[0].clientX;
+    }, { passive: true });
+
+    viewport.addEventListener("touchend", () => {
+      if (!isDragging) return;
+
+      const diff = currentX - startX;
+
+      if (Math.abs(diff) > 35) {
+        if (diff < 0 && current < pages.length - 1) current++;
+        if (diff > 0 && current > 0) current--;
+      }
+
+      isDragging = false;
+      updateCarousel(true);
+    });
+
+    window.addEventListener("load", () => {
+      updateCarousel(false);
+      setTimeout(sendHeight, 100);
+      setTimeout(sendHeight, 300);
+    });
+  </script>
+</body>
+</html>
