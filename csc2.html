@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CSC3 Flash Sale</title>
+<title>CSC2 Quiz Strip</title>
 
 <style>
 body{
@@ -20,7 +20,7 @@ justify-content:space-between;
 padding:14px 16px;
 border-radius:16px;
 
-background:linear-gradient(135deg,#ef4444,#f97316);
+background:linear-gradient(135deg,#7c3aed,#9333ea);
 color:white;
 
 box-shadow:0 8px 20px rgba(0,0,0,0.2);
@@ -43,17 +43,12 @@ font-size:15px;
 
 .subtitle{
 font-size:12px;
-}
-
-.timer{
-font-size:12px;
-font-weight:bold;
-margin-top:3px;
+opacity:.9;
 }
 
 .cta{
-background:white;
-color:#ef4444;
+background:#fde68a;
+color:#4c1d95;
 border:none;
 padding:8px 12px;
 border-radius:20px;
@@ -67,38 +62,16 @@ cursor:pointer;
 
 <div class="strip">
 <div class="left">
-<div class="icon">⚡</div>
+<div class="icon">🧠</div>
 
 <div>
-<div class="title">₹100 Cashback Offer</div>
-<div class="subtitle">Activate before timer ends</div>
-<div class="timer" id="timer">Ends in 05:00</div>
+<div class="title">Take Today’s 2-Question Quiz</div>
+<div class="subtitle">Answer & win surprise rewards</div>
 </div>
 </div>
 
-<button class="cta">Activate</button>
+<button class="cta">Play</button>
 </div>
-
-<script>
-
-let seconds=300
-
-function updateTimer(){
-
-let min=Math.floor(seconds/60)
-let sec=seconds%60
-
-if(sec<10) sec="0"+sec
-
-document.getElementById("timer").innerText=
-"Ends in "+min+":"+sec
-
-seconds--
-}
-
-setInterval(updateTimer,1000)
-
-</script>
 
 </body>
 </html>
