@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+  />
+  <title>IDFC Style Controlled Carousel</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: transparent;
+      font-family: Arial, sans-serif;
+    }
+
+    :root {
+      --idfc-red: #b5122b;
+      --idfc-red-dark: #950f24;
+      --idfc-gold: #f4b321;
+      --idfc-gold-soft: #ffd978;
+      --idfc-blue: #1f4fa3;
+      --idfc-blue-dark: #163d80;
+      --idfc-charcoal: #2f3137;
+      --idfc-surface: #f5f5f7;
+      --idfc-white: #ffffff;
+      --idfc-text-soft: rgba(255, 255, 255, 0.88);
+      --idfc-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+      --radius: 18px;
+    }
+
+    .wrapper {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      overflow: hidden;
+      border-radius: var(--radius);
+    }
+
+    .viewport {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .track {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      transition: transform 320ms ease;
+      will-change: transform;
+    }
+
+    .slide {
+      flex: 0 0 100%;
+      width: 100%;
+      height: 100%;
+      padding: 0;
+    }
+
+    .strip {
+      width: 100%;
+      height: 100%;
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      color: var(--idfc-white);
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--idfc-shadow);
+    }
+
+    .strip::after {
+      content: "";
+      position: absolute;
+      right: -18px;
+      top: -18px;
+      width: 92px;
+      height: 92px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.08);
+      pointer-events: none;
+    }
+
+    .strip::before {
+      content: "";
+      position: absolute;
+      right: 18px;
+      bottom: -24px;
+      width: 72px;
+      height: 72px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.06);
+      transform: rotate(18deg);
+      pointer-events: none;
+    }
+
+    .left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+      min-width: 0;
+      z-index: 1;
+    }
+
+    .iconWrap {
+      width: 46px;
+      height: 46px;
+      min-width: 46px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      background: rgba(255, 255, 255, 0.14);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+    }
+
+    .textBlock {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .pill,
+    .badge,
+    .tag {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      padding: 4px 8px;
+      border-radius: 999px;
+      margin-bottom: 6px;
+      white-space: nowrap;
+    }
+
+    .title {
+      font-size: 15px;
+      font-weight: 700;
+      line-height: 1.2;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .subtitle {
+      margin-top: 4px;
+      font-size: 12px;
+      line-height: 1.25;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: var(--idfc-text-soft);
+    }
+
+    .timer {
+      margin-top: 4px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #fff3cf;
+    }
+
+    .cta {
+      flex-shrink: 0;
+      border: none;
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      z-index: 1;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+    }
+
+    .cta:active {
+      transform: scale(0.97);
+    }
+
+    /* IDFC-like banking categories */
+    .primary {
+      background: linear-gradient(135deg, var(--idfc-red-dark), var(--idfc-red));
+    }
+
+    .primary .badge,
+    .primary .pill,
+    .primary .tag {
+      background: rgba(255, 255, 255, 0.16);
+      color: #ffe6eb;
+    }
+
+    .primary .cta {
+      background: var(--idfc-gold);
+      color: #5e3900;
+    }
+
+    .gold {
+      background: linear-gradient(135deg, #c68a13, #e0a321);
+    }
+
+    .gold .badge,
+    .gold .pill,
+    .gold .tag {
+      background: rgba(255, 255, 255, 0.18);
+      color: #fff7df;
+    }
+
+    .gold .cta {
+      background: var(--idfc-white);
+      color: #8a5c00;
+    }
+
+    .blue {
+      background: linear-gradient(135deg, var(--idfc-blue-dark), var(--idfc-blue));
+    }
+
+    .blue .badge,
+    .blue .pill,
+    .blue .tag {
+      background: rgba(255, 255, 255, 0.14);
+      color: #e4efff;
+    }
+
+    .blue .cta {
+      background: var(--idfc-white);
+      color: var(--idfc-blue-dark);
+    }
+
+    .charcoal {
+      background: linear-gradient(135deg, #23262c, #3b4049);
+    }
+
+    .charcoal .badge,
+    .charcoal .pill,
+    .charcoal .tag {
+      background: rgba(244, 179, 33, 0.16);
+      color: #ffd978;
+      border: 1px solid rgba(255, 217, 120, 0.2);
+    }
+
+    .charcoal .cta {
+      background: var(--idfc-gold);
+      color: #4a3000;
+    }
+
+    .dots {
+      position: absolute;
+      left: 50%;
+      bottom: 8px;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 6px;
+      z-index: 5;
+      pointer-events: none;
+    }
+
+    .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.35);
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+
+    .dot.active {
+      background: rgba(255,255,255,0.95);
+      transform: scale(1.25);
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="viewport" id="viewport">
+      <div class="track" id="track">
+        <div class="slide" data-banner-id="reward_strip" data-banner-name="reward_points">
+          <div class="strip primary" onclick="handleBannerClick('reward_strip', 'reward_points')">
+            <div class="left">
+              <div class="iconWrap">🎁</div>
+              <div class="textBlock">
+                <div class="badge">Limited Time</div>
+                <div class="title">Unlock ₹500 Reward Points</div>
+                <div class="subtitle">Complete 1 quick step and claim your bonus</div>
+              </div>
+            </div>
+            <button class="cta" onclick="handleCTA(event, 'reward_strip', 'reward_points', 'claim_reward')">Claim</button>
+          </div>
+        </div>
+
+        <div class="slide" data-banner-id="quiz_strip" data-banner-name="quiz_challenge">
+          <div class="strip blue" onclick="handleBannerClick('quiz_strip', 'quiz_challenge')">
+            <div class="left">
+              <div class="iconWrap">🧠</div>
+              <div class="textBlock">
+                <div class="pill">2-Question Challenge</div>
+                <div class="title">Can you unlock today’s surprise reward?</div>
+                <div class="subtitle">Answer 2 quick questions and win instant benefits</div>
+              </div>
+            </div>
+            <button class="cta" onclick="handleCTA(event, 'quiz_strip', 'quiz_challenge', 'play_quiz')">Play</button>
+          </div>
+        </div>
+
+        <div class="slide" data-banner-id="flash_offer_strip" data-banner-name="flash_offer">
+          <div class="strip gold" onclick="handleBannerClick('flash_offer_strip', 'flash_offer')">
+            <div class="left">
+              <div class="iconWrap">⚡</div>
+              <div class="textBlock">
+                <div class="tag">Flash Offer</div>
+                <div class="title">₹100 Cashback on your next payment</div>
+                <div class="subtitle">Activate before time runs out</div>
+                <div class="timer" id="timer">Ends in 05:00</div>
+              </div>
+            </div>
+            <button class="cta" onclick="handleCTA(event, 'flash_offer_strip', 'flash_offer', 'activate_offer')">Activate</button>
+          </div>
+        </div>
+
+        <div class="slide" data-banner-id="premium_upgrade_strip" data-banner-name="premium_upgrade">
+          <div class="strip charcoal" onclick="handleBannerClick('premium_upgrade_strip', 'premium_upgrade')">
+            <div class="left">
+              <div class="iconWrap">💳</div>
+              <div class="textBlock">
+                <div class="badge">Pre-approved</div>
+                <div class="title">Upgrade to Premium and unlock higher benefits</div>
+                <div class="subtitle">Enjoy lounge access, rewards and priority service</div>
+              </div>
+            </div>
+            <button class="cta" onclick="handleCTA(event, 'premium_upgrade_strip', 'premium_upgrade', 'view_premium_offer')">View</button>
+          </div>
+        </div>
+
+        <div class="slide" data-banner-id="spin_strip" data-banner-name="lucky_spin">
+          <div class="strip primary" onclick="handleBannerClick('spin_strip', 'lucky_spin')">
+            <div class="left">
+              <div class="iconWrap">🎡</div>
+              <div class="textBlock">
+                <div class="tag">Today's Lucky Spin</div>
+                <div class="title">Spin the wheel & unlock surprise rewards</div>
+                <div class="subtitle">Cashback, vouchers & exclusive perks</div>
+              </div>
+            </div>
+            <button class="cta" onclick="handleCTA(event, 'spin_strip', 'lucky_spin', 'spin_now')">Spin</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dots" id="dots">
+      <div class="dot active"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+    </div>
+  </div>
+
+  <script>
+    const viewport = document.getElementById('viewport');
+    const track = document.getElementById('track');
+    const dots = Array.from(document.querySelectorAll('.dot'));
+    const slides = Array.from(document.querySelectorAll('.slide'));
+    const slideCount = slides.length;
+
+    let currentIndex = 0;
+    let autoScrollInterval = null;
+    let resumeTimeout = null;
+    let isAnimating = false;
+
+    let touchStartX = 0;
+    let touchCurrentX = 0;
+    let isDragging = false;
+    let hasMoved = false;
+
+    const viewedBanners = new Set();
+
+    /* Prevent duplicate click events */
+    let clickLock = false;
+    const CLICK_LOCK_MS = 500;
+
+    function sendCTEvent(eventName, props = {}) {
+      const payload = {
+        event: eventName,
+        props
+      };
+
+      console.log('Posting to RN:', payload);
+
+      if (window.ReactNativeWebView && window.ReactNativeWebView.postMessage) {
+        window.ReactNativeWebView.postMessage(JSON.stringify(payload));
+      }
+    }
+
+    function guardedBannerClick(props) {
+      if (clickLock) return;
+      clickLock = true;
+
+      sendCTEvent('banner_clicked', props);
+
+      setTimeout(() => {
+        clickLock = false;
+      }, CLICK_LOCK_MS);
+    }
+
+    function getSlideMeta(index) {
+      const slide = slides[index];
+      if (!slide) return null;
+
+      return {
+        bannerId: slide.dataset.bannerId || '',
+        bannerName: slide.dataset.bannerName || ''
+      };
+    }
+
+    function fireBannerViewed(index) {
+      const meta = getSlideMeta(index);
+      if (!meta || !meta.bannerId) return;
+
+      if (viewedBanners.has(meta.bannerId)) return;
+      viewedBanners.add(meta.bannerId);
+
+      sendCTEvent('banner_viewed', {
+        banner_id: meta.bannerId,
+        banner_name: meta.bannerName,
+        banner_position: index + 1
+      });
+    }
+
+    function handleBannerClick(bannerId, bannerName) {
+      if (hasMoved) return;
+
+      guardedBannerClick({
+        banner_id: bannerId,
+        banner_name: bannerName,
+        click_target: 'strip',
+        cta_target: ''
+      });
+    }
+
+    function handleCTA(event, bannerId, bannerName, ctaTarget) {
+      event.stopPropagation();
+
+      guardedBannerClick({
+        banner_id: bannerId,
+        banner_name: bannerName,
+        click_target: 'cta',
+        cta_target: ctaTarget || ''
+      });
+    }
+
+    function updateDots() {
+      dots.forEach((dot, i) => {
+        dot.classList.toggle('active', i === currentIndex);
+      });
+    }
+
+    function renderTrack(animate = true) {
+      track.style.transition = animate ? 'transform 320ms ease' : 'none';
+      track.style.transform = `translateX(-${currentIndex * 100}%)`;
+    }
+
+    function goToSlide(index, source = 'system') {
+      if (isAnimating) return;
+
+      const nextIndex = Math.max(0, Math.min(index, slideCount - 1));
+      if (nextIndex === currentIndex) return;
+
+      currentIndex = nextIndex;
+      updateDots();
+
+      isAnimating = true;
+      renderTrack(true);
+
+      setTimeout(() => {
+        isAnimating = false;
+        fireBannerViewed(currentIndex);
+      }, 340);
+    }
+
+    function goToAdjacent(direction) {
+      if (direction === 'next' && currentIndex < slideCount - 1) {
+        goToSlide(currentIndex + 1, 'swipe');
+      } else if (direction === 'prev' && currentIndex > 0) {
+        goToSlide(currentIndex - 1, 'swipe');
+      } else {
+        renderTrack(true);
+      }
+    }
+
+    function stopAutoScroll() {
+      if (autoScrollInterval) {
+        clearInterval(autoScrollInterval);
+        autoScrollInterval = null;
+      }
+    }
+
+    function startAutoScroll() {
+      stopAutoScroll();
+      autoScrollInterval = setInterval(() => {
+        const next = currentIndex + 1 >= slideCount ? 0 : currentIndex + 1;
+        currentIndex = next;
+        updateDots();
+        renderTrack(true);
+
+        setTimeout(() => {
+          fireBannerViewed(currentIndex);
+        }, 340);
+      }, 3500);
+    }
+
+    function pauseAndResumeAutoScroll() {
+      stopAutoScroll();
+      if (resumeTimeout) clearTimeout(resumeTimeout);
+      resumeTimeout = setTimeout(() => {
+        startAutoScroll();
+      }, 4500);
+    }
+
+    function onTouchStart(clientX) {
+      if (isAnimating) return;
+      isDragging = true;
+      hasMoved = false;
+      touchStartX = clientX;
+      touchCurrentX = clientX;
+      track.style.transition = 'none';
+      pauseAndResumeAutoScroll();
+    }
+
+    function onTouchMove(clientX) {
+      if (!isDragging || isAnimating) return;
+
+      touchCurrentX = clientX;
+      const deltaX = touchCurrentX - touchStartX;
+
+      if (Math.abs(deltaX) > 8) {
+        hasMoved = true;
+      }
+
+      const baseTranslate = -currentIndex * viewport.clientWidth;
+      let dragTranslate = baseTranslate + deltaX;
+
+      /* slight resistance at edges */
+      if ((currentIndex === 0 && deltaX > 0) || (currentIndex === slideCount - 1 && deltaX < 0)) {
+        dragTranslate = baseTranslate + deltaX * 0.35;
+      }
+
+      track.style.transform = `translateX(${dragTranslate}px)`;
+    }
+
+    function onTouchEnd() {
+      if (!isDragging || isAnimating) return;
+
+      const deltaX = touchCurrentX - touchStartX;
+      const threshold = Math.min(70, viewport.clientWidth * 0.18);
+
+      isDragging = false;
+      track.style.transition = 'transform 320ms ease';
+
+      /* exactly one adjacent move only */
+      if (deltaX <= -threshold) {
+        goToAdjacent('next');
+      } else if (deltaX >= threshold) {
+        goToAdjacent('prev');
+      } else {
+        renderTrack(true);
+      }
+
+      setTimeout(() => {
+        hasMoved = false;
+      }, 50);
+    }
+
+    viewport.addEventListener('touchstart', (e) => {
+      if (!e.touches || !e.touches.length) return;
+      onTouchStart(e.touches[0].clientX);
+    }, { passive: true });
+
+    viewport.addEventListener('touchmove', (e) => {
+      if (!e.touches || !e.touches.length) return;
+      onTouchMove(e.touches[0].clientX);
+    }, { passive: true });
+
+    viewport.addEventListener('touchend', onTouchEnd);
+
+    viewport.addEventListener('mousedown', (e) => {
+      onTouchStart(e.clientX);
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      onTouchMove(e.clientX);
+    });
+
+    window.addEventListener('mouseup', onTouchEnd);
+
+    let seconds = 300;
+    function updateTimer() {
+      const min = Math.floor(seconds / 60);
+      let sec = seconds % 60;
+      sec = sec < 10 ? '0' + sec : sec;
+
+      const timer = document.getElementById('timer');
+      if (timer) {
+        timer.innerText = 'Ends in ' + min + ':' + sec;
+      }
+
+      if (seconds > 0) {
+        seconds--;
+      }
+    }
+
+    updateDots();
+    renderTrack(false);
+    updateTimer();
+    setInterval(updateTimer, 1000);
+
+    setTimeout(() => {
+      fireBannerViewed(0);
+    }, 300);
+
+    startAutoScroll();
+  </script>
+</body>
+</html>
