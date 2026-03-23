@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>IDFC Style Carousel</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: transparent;
+      font-family: Arial, sans-serif;
+    }
+
+    :root {
+      --idfc-red: #b5122b;
+      --idfc-red-dark: #950f24;
+      --idfc-gold: #f4b321;
+      --idfc-blue: #1f4fa3;
+      --idfc-charcoal: #2f3137;
+    }
+
+    .wrapper {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      position: relative;
+      border-radius: 18px;
+    }
+
+    .viewport {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .track {
+      display: flex;
+      height: 100%;
+      transition: transform 320ms ease;
+    }
+
+    .slide {
+      flex: 0 0 100%;
+      height: 100%;
+    }
+
+    .strip {
+      width: 100%;
+      height: 100%;
+      border-radius: 18px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: white;
+    }
+
+    .left {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex: 1;
+    }
+
+    .iconWrap {
+      width: 46px;
+      height: 46px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      background: rgba(255,255,255,0.15);
+    }
+
+    .title {
+      font-size: 15px;
+      font-weight: bold;
+    }
+
+    .subtitle {
+      font-size: 12px;
+      opacity: 0.9;
+      margin-top: 4px;
+    }
+
+    .badge {
+      font-size: 10px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      margin-bottom: 6px;
+      background: rgba(255,255,255,0.2);
+    }
+
+    .cta {
+      border: none;
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .primary { background: linear-gradient(135deg, var(--idfc-red-dark), var(--idfc-red)); }
+    .primary .cta { background: var(--idfc-gold); color: black; }
+
+    .blue { background: linear-gradient(135deg, #163d80, var(--idfc-blue)); }
+    .blue .cta { background: white; color: #163d80; }
+
+    .gold { background: linear-gradient(135deg, #c68a13, #e0a321); }
+    .gold .cta { background: white; color: #8a5c00; }
+
+    .charcoal { background: linear-gradient(135deg, #23262c, #3b4049); }
+    .charcoal .cta { background: var(--idfc-gold); color: black; }
+
+    .dots {
+      position: absolute;
+      bottom: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 6px;
+    }
+
+    .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.4);
+    }
+
+    .dot.active {
+      background: white;
+      transform: scale(1.3);
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="wrapper">
+  <div class="viewport" id="viewport">
+    <div class="track" id="track">
+
+      <!-- Slide 1 -->
+      <div class="slide" data-banner-id="reward" data-banner-name="reward_points">
+        <div class="strip primary" onclick="handleBannerClick('reward','reward_points','https://example.com/reward')">
+          <div class="left">
+            <div class="iconWrap">🎁</div>
+            <div>
+              <div class="badge">Limited Time</div>
+              <div class="title">Unlock ₹500 Reward Points</div>
+              <div class="subtitle">Complete 1 step to claim bonus</div>
+            </div>
+          </div>
+          <button class="cta" onclick="handleCTA(event,'reward','reward_points','claim','https://example.com/reward')">Claim</button>
+        </div>
+      </div>
+
+      <!-- Slide 2 -->
+      <div class="slide" data-banner-id="quiz" data-banner-name="quiz">
+        <div class="strip blue" onclick="handleBannerClick('quiz','quiz','https://example.com/quiz')">
+          <div class="left">
+            <div class="iconWrap">🧠</div>
+            <div>
+              <div class="badge">Challenge</div>
+              <div class="title">Answer & Win Rewards</div>
+              <div class="subtitle">Quick 2 question quiz</div>
+            </div>
+          </div>
+          <button class="cta" onclick="handleCTA(event,'quiz','quiz','play','https://example.com/quiz')">Play</button>
+        </div>
+      </div>
+
+      <!-- Slide 3 -->
+      <div class="slide" data-banner-id="offer" data-banner-name="cashback">
+        <div class="strip gold" onclick="handleBannerClick('offer','cashback','https://example.com/cashback')">
+          <div class="left">
+            <div class="iconWrap">⚡</div>
+            <div>
+              <div class="badge">Flash</div>
+              <div class="title">₹100 Cashback</div>
+              <div class="subtitle">Limited time offer</div>
+            </div>
+          </div>
+          <button class="cta" onclick="handleCTA(event,'offer','cashback','activate','https://example.com/cashback')">Activate</button>
+        </div>
+      </div>
+
+      <!-- Slide 4 -->
+      <div class="slide" data-banner-id="premium" data-banner-name="upgrade">
+        <div class="strip charcoal" onclick="handleBannerClick('premium','upgrade','https://example.com/premium')">
+          <div class="left">
+            <div class="iconWrap">💳</div>
+            <div>
+              <div class="badge">Pre-approved</div>
+              <div class="title">Upgrade to Premium</div>
+              <div class="subtitle">Higher benefits & lounge access</div>
+            </div>
+          </div>
+          <button class="cta" onclick="handleCTA(event,'premium','upgrade','view','https://example.com/premium')">View</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="dots" id="dots">
+    <div class="dot active"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+  </div>
+</div>
+
+<script>
+const track = document.getElementById('track');
+const dots = document.querySelectorAll('.dot');
+const slides = document.querySelectorAll('.slide');
+
+let index = 0;
+let lock = false;
+let startX = 0;
+let currentX = 0;
+let dragging = false;
+let moved = false;
+
+/* Prevent double click */
+let clickLock = false;
+
+function sendEvent(event, props){
+  console.log(event, props);
+}
+
+function openLink(url){
+  if(!url) return;
+  window.location.href = url;
+}
+
+function guardedClick(props, url){
+  if(clickLock) return;
+  clickLock = true;
+
+  sendEvent('banner_clicked', props);
+
+  setTimeout(()=>openLink(url), 50);
+
+  setTimeout(()=>clickLock = false, 400);
+}
+
+function handleBannerClick(id, name, url){
+  if(moved) return;
+
+  guardedClick({
+    banner_id:id,
+    banner_name:name,
+    click_target:'strip'
+  }, url);
+}
+
+function handleCTA(e, id, name, target, url){
+  e.stopPropagation();
+  if(moved) return;
+
+  guardedClick({
+    banner_id:id,
+    banner_name:name,
+    click_target:'cta',
+    cta_target:target
+  }, url);
+}
+
+/* swipe logic */
+function render(){
+  track.style.transform = `translateX(-${index * 100}%)`;
+  dots.forEach((d,i)=>d.classList.toggle('active',i===index));
+}
+
+document.addEventListener('touchstart',e=>{
+  startX = e.touches[0].clientX;
+  dragging = true;
+  moved = false;
+});
+
+document.addEventListener('touchmove',e=>{
+  if(!dragging) return;
+  currentX = e.touches[0].clientX;
+  if(Math.abs(currentX-startX)>10) moved = true;
+});
+
+document.addEventListener('touchend',()=>{
+  if(!dragging) return;
+  dragging=false;
+
+  let diff = currentX-startX;
+
+  if(diff < -50 && index < slides.length-1) index++;
+  else if(diff > 50 && index > 0) index--;
+
+  render();
+
+  setTimeout(()=>moved=false,50);
+});
+
+render();
+</script>
+
+</body>
+</html>
